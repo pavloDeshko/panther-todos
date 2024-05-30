@@ -1,4 +1,16 @@
-import type { Metadata } from "next";
+import '@/app/globals.css'
+
+export default function AppLayout({children}:{children:React.ReactNode}){
+  return(
+    <html lang="en">
+      <body>
+        <div className="w-15 mx-auto bg-slate-500">{children}</div>
+      </body>
+    </html>
+  )
+}
+
+/* import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
@@ -20,3 +32,4 @@ export default function RootLayout({
     </html>
   );
 }
+ */

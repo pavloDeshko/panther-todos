@@ -1,3 +1,13 @@
+import TodosWrapper from "@/components/todosWrapper"
+
+export default async function App(){
+  return (
+      <div>
+        <TodosWrapper/>
+      </div>
+  )
+}
+/*
 import Image from "next/image";
 
 export default function Home() {
@@ -111,3 +121,4 @@ export default function Home() {
     </main>
   );
 }
+ */
