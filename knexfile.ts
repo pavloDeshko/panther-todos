@@ -3,7 +3,7 @@ import type { Knex } from "knex";
 const config: {[k:string]:Knex.Config}= {
   production:{
     client:'pg',
-    connection:process.env.DATABASE_URL,
+    connection:process.env.POSTGRES_URL,
     pool: {
       min: 2,
       max: 10

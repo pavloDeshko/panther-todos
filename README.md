@@ -10,5 +10,5 @@ bun dev
 ```
 A little tribute to classic cartoon, please don't freak out :)
 
-Hosted at 
+Hosted at [Vercer](https://panther-todos-6eviv3fkj-pavlodeshkos-projects.vercel.app/)
 
