@@ -19,15 +19,15 @@ const config: Config = {
         "tartan":"url('/tartan_500.png')"
       },
       colors: {
-        'backing-light':'rgba(255,255,255,0.5)',
-        'backing-dark':'rgba(0,0,0,0.5)',
+        'backing-light':'rgba(255,255,255,0.7)',
+        'backing-dark':'rgba(0,0,0,0.7)',
         'section-light':c.slate[200],
         'section-dark': c.slate[700],
         'todo-light':c.slate[200],
         'todo-dark':c.slate[600],
         'input-light':c.slate[100],
-        'input-dark':c.slate[500],
-        'text-light':c.gray[900],
+        'input-dark':c.slate[400],
+        'text-light':c.gray[700],
         'text-dark':c.gray[100],
         'icons-light': c.gray[500],
         'icons-dark': c.gray[200]

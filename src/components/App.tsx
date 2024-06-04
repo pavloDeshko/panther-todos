@@ -21,7 +21,7 @@ type Action =
   {type:'filter', filterBy:FilterBy}|
   {type:'error', error:string|null}
 
-export const DispatchContext = createContext((a:Action)=>{console.log('empty dispatch')})
+export const DispatchContext = createContext((a:Action)=>{console.error('empty dispatch')})
 
 export const App = memo((
   {initTodos=[], initOptions=DEFAULT_OPTIONS}:{initTodos?:Todo[], initOptions?:Options}
@@ -42,7 +42,7 @@ export const App = memo((
       const find = (id:string)=>state.todos.findIndex(todo=>todo.todoId==id)
 
       if(action.type == 'create'){
-        state.todos.push(action.todo)
+        state.todos.unshift(action.todo)
         state.options.sortCustom = true
       }
       
@@ -71,7 +71,7 @@ export const App = memo((
       }
       
       if(['sort', 'filter', 'theme'].includes(action.type)){
-        console.log('Cookies set:',Cookies.set('options', JSON.stringify(state.options)))
+        Cookies.set('options', JSON.stringify(state.options))
       }
 
       if(action.type == 'error'){
@@ -81,8 +81,6 @@ export const App = memo((
       if(['create','delete','edit'].includes(action.type)){
         state.lastError = null
       }
-      console.log('Action:', JSON.stringify(action,undefined,'  '))
-      console.log('New State:', JSON.stringify(state,undefined,'  '))
     })
   },[updateState])
   
@@ -96,7 +94,7 @@ export const App = memo((
   return (<DispatchContext.Provider value={dispatch}>
     <div className={`App 
       w-full h-full
-      flex flex-col justify-between gap-3
+      flex flex-col justify-between gap-6
       text-text-light dark:text-text-dark
     `}>
       <div className="UpperSection flex flex-col gap-3">

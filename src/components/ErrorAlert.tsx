@@ -12,10 +12,11 @@ const ErrorAlert = memo(({message}:{message:string})=>{
   return (
     <div className="AlertContainer
       absolute flex
-      h-10 sm:w-60 
-      inset-x-5 bottom-5 
-      sm:inset-x-auto sm:right-10 sm:top-10
+      h-12
+      inset-x-5 bottom-5 right-0 left-0
+      sm:max-w-96 sm:right-2 sm:top-20 sm:left-auto
       border-red-600 border-l-8
+      bg-input-light dark:bg-input-dark
     ">
       <div className="AlertIcon flex-none w-10 p-1">
         <ErrorIcon className="PropsToIcon w-full h-full text-icons dark:text-icons-dark" />
@@ -37,25 +38,3 @@ const ErrorAlert = memo(({message}:{message:string})=>{
 
 export default ErrorAlert
 
-
-/*
-
-<div class="
-  flex
-  sm:w-60 
-  h-10 
-  bg-slate-500
-  absolute
-  bottom-5
-  inset-x-5
-  sm:right-10
-  sm:top-10
-  border-red-600
-  border-l-8
-">
-  <div class="flex-none bg-slate-950 w-10"></div>
-  <div class="flex-grow bg-white flex items-center p-3"><span>Error reaching to server :(</span></div>
-  <div class="flex-none bg-gray-800 w-10"></div>
-</div>
-
-*/

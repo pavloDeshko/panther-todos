@@ -6,7 +6,7 @@ const ButtonGroup = memo(({children}:{children: ReactNode})=>{
   return (
   <div className="ButtonGroup 
     flex-shrink min-w-0 
-    bg-transparent rounded-2xl shadow-lg overflow-clip border-2
+    bg-transparent rounded-2xl shadow-lg overflow-clip 
     flex ">
     {children}
   </div>
@@ -16,8 +16,8 @@ const ButtonGroup = memo(({children}:{children: ReactNode})=>{
 // tailwind won't purge those because classes are complete
 export enum Active {
   no='bg-gray-100 dark:bg-gray-800',
-  semi='bg-gray-300 dark:bg-gray-500',
-  yes='bg-gray-500 dark:bg-gray-300'
+  semi='bg-gray-200 dark:bg-gray-600',
+  yes='bg-gray-300 dark:bg-gray-500'
 }
 
 export const Button = memo(({icon, label, status=Active.no, onClick}:{icon?:ReactElement, label:string, status?:Active, onClick:()=>void})=>{
@@ -30,7 +30,7 @@ export const Button = memo(({icon, label, status=Active.no, onClick}:{icon?:Reac
     '>
       <button className={`ButtonProps
         w-full h-10
-        text-white uppercase text-shadow-md
+        uppercase text-shadow-md
         ${status}
         flex justify-center items-center gap-x-1
       `} onClick={onClick}>

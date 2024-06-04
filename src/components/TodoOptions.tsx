@@ -52,38 +52,3 @@ const TodoOptions = ({filterBy, sortBy, sortOrder, sortCustom}:TodoOptionsProps)
 
 export default TodoOptions
 
-
-/* 
-  const content = (
-    <div>
-      <input type="button" 
-        value={'not done'}
-        className={filterBy==FilterBy.notDone?'active':''}
-        onClick={()=>onFiltering(FilterBy.notDone)}
-      />
-      <input type="button" 
-        value={'all'}
-        className={filterBy==FilterBy.all?'active':''}
-        onClick={()=>onFiltering(FilterBy.all)}
-      />
-      <input type="button" 
-        value={'done'}
-        className={filterBy==FilterBy.done?'active':''}
-        onClick={()=>onFiltering(FilterBy.done)}
-      />
-
-      <br/>
-
-      <input type="button" 
-        value={'time'}
-        className={sortBy == SortBy.time?`${sortCustom?'semi-':''}active ${SortOrder[sortOrder]}`:''}
-        onClick={()=>onSorting(SortBy.time)}
-      />
-      <input type="button" 
-        value={'priority'}
-        className={sortBy == SortBy.priority?`active ${SortOrder[sortOrder]}`:''}
-        onClick={()=>onSorting(SortBy.priority)}
-      />
-    </div>
-  )
-  return content*/

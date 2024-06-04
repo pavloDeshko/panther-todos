@@ -12,7 +12,7 @@ import Tooltip from "./Tooltip"
 const sectionStyles = `
   w-full 
   bg-section-light dark:bg-section-dark
-  rounded-lg border-6 border-todo-light dark:border-todo-dark shadow-lg
+  rounded-lg border-4 border-todo-light dark:border-todo-dark shadow-lg
   p-4`
 
 const Header = memo(({theme}:{theme:Theme})=>{
@@ -33,9 +33,9 @@ const Header = memo(({theme}:{theme:Theme})=>{
       </div>
       <div className="NameArea 
         w-full flex-initial 
-        text-left text-pink-500 str
+        text-left str
         flex flex-col justify-center items-start">
-          <h1 className="text-4xl">Pink Panther's <div className="inline-block">ToDo List</div></h1>
+          <h1 className="text-4xl"><span className='text-pink-500'>Pink</span> Panther's <div className="inline-block">ToDo List</div></h1>
           <h2 className="hidden sm:block text-xl">Todo, todo, todo-todo-todo-todo-todooo...</h2>
       </div>
 

@@ -5,8 +5,9 @@ import { v4 as uuid } from 'uuid'
 import configs from '@/../knexfile'
 const k = knex(configs[process.env.NODE_ENV])
 
+const sqlite = (k?.client?.config?.client as string)?.includes('lite') !== false
 // transform unless false (known to be not SqLite)
-const transform = (k?.client?.config?.client as string)?.includes('lite') !== false ? // transform unless
+const transform = sqlite ? // transform unless
 (ar:Todo[]):Todo[]=>ar.map(todo=>{
   return {...todo, 
     created: new Date(todo.created).toISOString(), 
@@ -43,19 +44,13 @@ export const updateTodo = async (userId:string, todoId:string, data:Partial<Todo
     .returning(columns)
   )
   if(!result){throw new Error('no such todo for this user')}
-
   return result
 }
 
-export const deleteTodo = async (todoId:string, userId:string):Promise<boolean>=>{
+export const deleteTodo = async (userId:string,todoId:string):Promise<boolean>=>{
   const result = (await k<dbTodo>(table).delete().where({todoId, userId}))
 
-  if(!result){throw new Error('no such todo for this user')}
-
+  if(!result && !sqlite){throw new Error('no such todo for this user')}
+  // apparently sqlite bug https://github.com/knex/knex/issues/5757
   return !!result
 }
-
-
-
-
-

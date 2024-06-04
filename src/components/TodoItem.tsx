@@ -90,22 +90,11 @@ const TodoItem = memo(({todoOrData}:{todoOrData:Todo|TodoData}) => {
       onChange={handleChange} 
       loading={status == 'loading'} 
       fresh={!meta}
-      lastInput={typeof status == 'number' && !!meta ? status : null}
-      onSave={typeof status == 'number' ? !!meta ? handleSave : handleCreate: null}
-      onDelete={status == 'idle' && !!meta ? handleDelete : null}
+      modified={typeof status == 'number'? status : null}
+      onSave={ !!meta ? handleSave : handleCreate}
+      onDelete={handleDelete}
     />
   )
 })
 
 export default TodoItem
-
-/* {!!meta && <input type='button'
-      disabled={!status}
-      value="delete"
-      onClick={handleDelete}
-    />}
-
-    {//local.todo !== propTodo && /*which means user changed smth 
-      status == 'modified' &&
-      <AutoSaveButton cb={!!meta ? handleSave : handleCreate} auto={!!meta} />
-     */

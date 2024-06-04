@@ -16,14 +16,14 @@ type TodoFormProps = {
   done:boolean, 
   priority: number|null,
   loading:boolean,
-  lastInput:number|null,
   fresh:boolean,
+  modified:number|null,
   onChange:(value:Partial<Todo>)=>void,
-  onDelete:(()=>void) | null,
-  onSave:(()=>void) | null
+  onDelete:(()=>void),
+  onSave:(()=>void) 
 }
 
-const TodoForm = ({text, done, priority, loading, lastInput, fresh, onChange, onDelete, onSave}:TodoFormProps)=>{
+const TodoForm = ({text, done, priority, loading, fresh,modified, onChange, onDelete, onSave}:TodoFormProps)=>{
   const heatScale = [
     'bg-[#00ff29]',
     'bg-[#00ff96]',
@@ -40,7 +40,6 @@ const TodoForm = ({text, done, priority, loading, lastInput, fresh, onChange, on
   const priorities = useMemo(() => (
       <>
         {heatScale.map((c, i) => (
-          
           <button
             className={`PriorityButton 
               ${c} 
@@ -51,6 +50,7 @@ const TodoForm = ({text, done, priority, loading, lastInput, fresh, onChange, on
               rounded-md
             `}
             key={i + 1}
+            /* disabled={loading} TODO make so it's not reredering evyrything*/
             onClick={() => onChange({ priority: i + 1 })}
           ><Tooltip label={`priority ${i+1}`}><div className="w-full h-2"></div></Tooltip></button>
           
@@ -71,10 +71,11 @@ const TodoForm = ({text, done, priority, loading, lastInput, fresh, onChange, on
       overflow-visible 
       relative
     ">
-      <div className="CheckboxContainer
+      <div className={`CheckboxContainer
         flex-shrink-0
         flex items-center
-      ">
+        ${fresh?'hidden':''}
+      `}>
         <Tooltip label="done ?">
           <input type="checkbox" className={`DoneCheckbox
             form-checkbox 
@@ -93,7 +94,7 @@ const TodoForm = ({text, done, priority, loading, lastInput, fresh, onChange, on
       </div>
 
       <div className="CenterContainer flex-grow relative ">
-        <textarea className={`TextArea
+        <input type='text' className={`TextArea
           form-textarea
           w-full h-12
           p-1 
@@ -103,14 +104,13 @@ const TodoForm = ({text, done, priority, loading, lastInput, fresh, onChange, on
           bg-input-light
           dark:bg-input-dark
           ${ringStyle}
-        `}
-          rows={1} 
-          placeholder="what to do?..."
+        `} 
+          maxLength={255}
+          placeholder="what to do?.."
           disabled={loading} 
           value={text}
           onChange={e=>onChange({text : e.target.value})}
-        >
-        </textarea>
+        ></input>
         
         <div className="PrioritiesContainer
           absolute -bottom-5 w-full h-3 
@@ -126,7 +126,7 @@ const TodoForm = ({text, done, priority, loading, lastInput, fresh, onChange, on
           flex items-center justify-center
           z-10 
         ">
-          {onSave && 
+          {!!modified ? 
             <Tooltip label={fresh ? 'create new todo' : 'save changes'}>
               <IconButton
                 disabled={loading}
@@ -135,37 +135,36 @@ const TodoForm = ({text, done, priority, loading, lastInput, fresh, onChange, on
                 {fresh ? <CreateIcon/> : <SaveIcon/>}
               </IconButton>
             </Tooltip>
+          : loading ?
+            <div className=" ">
+              <LoadIcon className="animate-spin"/>
+            </div>
+          : null
           }
         </div>
       </div>
 
       <div className="ControlsContainer width-0 text-icons-light dark:text-icons-dark">
-        {onDelete && <div className="DeleteButtonCont
+        {!fresh && <div className="DeleteButtonCont
           absolute 
           top-1 right-1
         ">
           <Tooltip label="delete forever">
             <IconButton smaller={true}
-              disabled={loading}
+              disabled={loading||!!modified}
               onClick={onDelete}
             >
               <DeleteIcon/>
             </IconButton>
           </Tooltip>
         </div>}
-
-          
-        {lastInput !== null && onSave &&  
+  
+        {!!modified && text.trim() &&  
           <div className="absolute right-2 inset-y-0 flex items-center">
-             <AutoSave cb={onSave} lastInput={lastInput}  />
+             <AutoSave cb={onSave} lastInput={modified}  />
           </div>
         } 
         
-        {loading && 
-          <div className="absolute right-2 bottom-2 ">
-            <LoadIcon className="animate-spin"/>
-          </div>
-        }
       </div>
     </div>
 
@@ -173,34 +172,3 @@ const TodoForm = ({text, done, priority, loading, lastInput, fresh, onChange, on
 }
 
 export default TodoForm
-
-/* /* {!!meta && <input type='button'
-      disabled={!status}
-      value="delete"
-      onClick={handleDelete}
-    />}
-
-    {//local.todo !== propTodo && /*which means user changed smth 
-      status == Status.modified &&
-      <AutoSaveButton cb={!!meta ? handleSave : handleCreate} auto={!!meta} />
-     
-     
-     
-     
-     
-     
-       (<div className="
-  bg-slate-400 rounded p-0.5
-  px-2 py-1
-  text-xs text-center
-  absolute
-  -bottom-2 translate-y-full
-  -left-1
-  z-10
-  hidden
-  group-hover:block
-">close</div>)
-     
-     
-     
-      */

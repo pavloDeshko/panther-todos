@@ -52,7 +52,7 @@ export const patchTodo = async(todoId:string, data:PartialTodoData)=>{
 }
 
 export const deleteTodo = async(todoId:string)=>{
-  await w.delete(todoId)
+  await w.json(new String(todoId)).delete()
     .res()
     .catch(handleNetwork)
 }

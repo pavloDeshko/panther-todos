@@ -3,10 +3,11 @@ import { cookies } from "next/headers"
 import { UuidSchema, Todo, USER_ID, OPTIONS, OptionsSchema } from "@/lib/types"
 import {readTodos} from "@/lib/data"
 import App from "@/components/App"
+import { getUserOptions } from "@/lib/misc"
 
 const AppWrapper = async()=>{
   const userId = UuidSchema.safeParse(cookies().get(USER_ID)?.value).data
-  const options = OptionsSchema.safeParse(JSON.parse(cookies().get(OPTIONS)?.value || '{}')).data
+  const options = getUserOptions(cookies)
 
   let todos :Todo[] = []
   // for initial server render 

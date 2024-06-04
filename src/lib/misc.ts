@@ -1,4 +1,5 @@
-import {SortBy, SortOrder, FilterBy, Theme, Options, TodoData, Todo} from '@/lib/types'
+
+import {SortBy, SortOrder, FilterBy, Theme, OPTIONS, OptionsSchema,Options, TodoData, Todo} from '@/lib/types'
 
 export const DEFAULT_OPTIONS:Options = {
   sortBy:SortBy.time,
@@ -15,7 +16,7 @@ export const DEFAULT_TODO_DATA:TodoData = {
 } as const
 
 export const compareTodos = (by:SortBy, order:SortOrder)=>(a:Todo,b:Todo)=>{
-  const [aa,bb] =  
+  const [bb,aa] =  
     (order == SortOrder.asc ? [a,b] : [b,a])
     .map(todo => by == SortBy.priority ? 
       todo.priority == null ? 5 : todo.priority : 
@@ -23,3 +24,5 @@ export const compareTodos = (by:SortBy, order:SortOrder)=>(a:Todo,b:Todo)=>{
     )
   return aa > bb ? 1 : aa < bb ? -1 : 0
 }
+
+export const getUserOptions = (cookies:any)=>OptionsSchema.safeParse(JSON.parse(cookies().get(OPTIONS)?.value || '{}')).data
