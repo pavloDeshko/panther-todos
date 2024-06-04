@@ -159,7 +159,7 @@ const TodoForm = ({text, done, priority, loading, fresh,modified, onChange, onDe
           </Tooltip>
         </div>}
   
-        {!!modified && text.trim() &&  
+        {!!modified && text.trim() && !fresh &&  
           <div className="absolute right-2 inset-y-0 flex items-center">
              <AutoSave cb={onSave} lastInput={modified}  />
           </div>

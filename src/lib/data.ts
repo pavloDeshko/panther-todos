@@ -3,7 +3,7 @@ import { Todo, TodoData} from "@/lib/types"
 import { v4 as uuid } from 'uuid'
 
 import configs from '@/../knexfile'
-const k = knex(configs[process.env.NODE_ENV])
+const k = knex(configs.development) //configs[process.env.NODE_ENV])
 
 const sqlite = (k?.client?.config?.client as string)?.includes('lite') !== false
 // transform unless false (known to be not SqLite)

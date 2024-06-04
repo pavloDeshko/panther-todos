@@ -58,7 +58,7 @@ export const Footer = ()=>{
       ${sectionStyles}
       p-0
     `}>
-      <div>Footer text</div>
+      <div>Rights to Pink Panther belong to whoever they belong to :)  No, we don't persistently store your data. Yes, we use cookies</div>
     </footer>
   )
 } 
