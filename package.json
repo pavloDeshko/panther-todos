@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "npm run db migrate:latest -- --env production && next start",
     "lint": "next lint",
-    "db": "knex"
+    "db": "knex",
+    "seed":"knex migrate:latest --env production"
   },
   "dependencies": {
     "@tailwindcss/forms": "^0.5.7",
