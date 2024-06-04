@@ -1,11 +1,13 @@
 import { memo } from "react"
 
-import { Todo } from "@/lib/types"
+import { Todo, FilterBy } from "@/lib/types"
 import TodoItem from "./TodoItem"
 
-const TodoList = memo(({todos}:{todos:Todo[]})=>{
-  return todos.map(todo=>
-    <TodoItem key={todo.todoId} todo={todo}/>
+const TodoList = memo(({todos, filterBy}:{todos:Todo[], filterBy:FilterBy})=>{
+  return todos.filter(
+    todo => filterBy==FilterBy.all || todo.done == (filterBy == FilterBy.done)
+  ).map(todo=>
+    <TodoItem key={todo.todoId} todoOrData={todo}/>
   )
 })
 

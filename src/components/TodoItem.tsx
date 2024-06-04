@@ -1,89 +1,111 @@
 import { FormEvent, useState, memo, useContext, useCallback, useMemo } from "react"
 import { useImmer } from 'use-immer'
 
-import { Todo, TodoData } from "@/lib/types"
-import { DispatchContext } from "./App"
-import AutoSaveButton from "./AutoSaveButton"
-import TodoForm from "./TodoForm"
+import { Todo, TodoData, TodoMeta } from "@/lib/types"
 import {getTodos, postTodo, patchTodo, deleteTodo} from '@/lib/ajax'
+import { DispatchContext } from "./App"
+import AutoSave from "./AutoSave"
+import TodoForm from "./TodoForm"
 
-enum Status{
-  loading = 0,
-  idle = 1,
-  modified = 2,
-  error = 3
+type StatusOrModified = 'loading' | 'idle'  | number // number is timestamp of last modification
+
+const isTodo = (todo:Todo|TodoData): todo is Todo=>{
+  return typeof (todo as Todo).todoId == 'string'
 }
 
-const TodoItem = memo(({todo:propTodo, fresh=false}:{todo:Todo, fresh?:boolean}) => {
+const TodoItem = memo(({todoOrData}:{todoOrData:Todo|TodoData}) => {
   const dispatch = useContext(DispatchContext)
   
-  const [local, updateLocal] = useImmer({todo:propTodo, status:Status.idle})
+  const [{data,status}, updateLocal] = 
+    useImmer<{data:TodoData, status:StatusOrModified}>({data:todoOrData, status:'idle'})
+  const meta:TodoMeta|null = isTodo(todoOrData) ? todoOrData :null
 
-  const handleChange = (value:Partial<Todo>)=>{
+  const handleChange = useCallback((value:Partial<Todo>)=>{
     updateLocal(local=>{
-      local.todo = {...local.todo, ...value}
-      local.status = Status.modified
+      local.data = {...local.data, ...value}
+      local.status = Date.now()
     })
-  }
- 
-  const handleSave = useCallback(async()=>{
-    updateLocal(local => {
-      local.status = Status.loading
-    })
+  },[])
+
+  const handleCreate = useCallback(async()=>{
     try{
-      const result = await patchTodo(propTodo.todoId, local.todo)
-      dispatch({type:'edit', todo:result})
       updateLocal(local => {
-        local.todo = result
-        local.status = Status.idle
+        local.status = 'loading'
+      })
+      const result = await postTodo(data)
+      dispatch({type:'create', todo : result})
+      updateLocal(local => {
+        local.data = todoOrData
+        local.status = 'idle'
       })
     }catch{
+      dispatch({type:'error',error:"Can't reach server to create todo :("})
       updateLocal(local => {
-        local.status = Status.error
+        local.status = Date.now()
       })
     }
-  },[local])
+  },[data/*means Change -> resave*/,status])
+ 
+  const handleSave = useCallback(async()=>{
+    if(!meta){return} // not supposed to be called on fresh todo
+    try{
+      updateLocal(local => {
+        local.status = 'loading'
+      })
+      const result = await patchTodo(meta.todoId, data)
+      dispatch({type:'edit', todo:result})
+      updateLocal(local => {
+        local.data = result
+        local.status = 'idle'
+      })
+    }catch{
+      dispatch({type:'error',error:"Can't reach server to save todo :("})
+      updateLocal(local => {
+        local.status = Date.now()
+      })
+    }
+  },[data,status])
 
   const handleDelete = async()=>{
-    updateLocal(local => {
-      local.status = Status.loading
-    })
+    if(!meta){return}
     try{
-      await deleteTodo(propTodo.todoId)
-      dispatch({type:'delete', todoId:propTodo.todoId})
       updateLocal(local => {
-        local.status = Status.idle
+        local.status = 'loading'
       })
+      await deleteTodo(meta.todoId)
+      dispatch({type:'delete', todoId:meta.todoId})
     }catch(er){
-      // show error
+      dispatch({type:'error',error:"Can't reach server to delete todo :("})
+    }finally{
       updateLocal(local => {
-        local.status = Status.error
+        local.status = 'idle'
       })
     }
   }
   
-  const {text, priority, done} = local.todo
-  return (
-    <div>
-      <TodoForm 
-        text={text} 
-        priority={priority} 
-        done={done} 
-        onChange={handleChange} 
-        disabled={!local.status} />
-    
-      <input type='button'
-        disabled={!local.status}
-        value="delete"
-        onClick={handleDelete}
-      />
 
-      {//local.todo !== propTodo && /*which means user changed smth */ 
-        local.status == Status.modified &&
-        <AutoSaveButton cb={handleSave} />
-      }
-    </div>
+  return (
+    <TodoForm 
+      {...data}
+      onChange={handleChange} 
+      loading={status == 'loading'} 
+      fresh={!meta}
+      lastInput={typeof status == 'number' && !!meta ? status : null}
+      onSave={typeof status == 'number' ? !!meta ? handleSave : handleCreate: null}
+      onDelete={status == 'idle' && !!meta ? handleDelete : null}
+    />
   )
 })
 
 export default TodoItem
+
+/* {!!meta && <input type='button'
+      disabled={!status}
+      value="delete"
+      onClick={handleDelete}
+    />}
+
+    {//local.todo !== propTodo && /*which means user changed smth 
+      status == 'modified' &&
+      <AutoSaveButton cb={!!meta ? handleSave : handleCreate} auto={!!meta} />
+     */

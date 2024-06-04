@@ -1,38 +1,38 @@
 "use client"
-// client boundary will get 
-import Link from 'next/link'
-import { Todo, TodoData } from "@/lib/types"
-import { useCallback, useMemo, useState, createContext} from 'react'
+// client boundary
+import { useCallback, useMemo, createContext, memo, useEffect} from 'react'
 import { useImmer } from 'use-immer'
-import sortBy from 'lodash.sortby'
-import reverse from 'lodash.reverse'
+import Cookies from 'js-cookie'
+
+import { Todo, SortBy, SortOrder, FilterBy, Theme, State, Options } from "@/lib/types"
+import {compareTodos, DEFAULT_OPTIONS, DEFAULT_TODO_DATA} from '@/lib/misc'
+import Header, {Footer} from './Header'
 import TodoList from './TodoList'
 import TodoOptions from './TodoOptions'
-
-type FreshTodo = Omit<Todo,'todoId'>&{todoId:string|null}
-export type Sorting = {order:'asc'|'desc', by:'time'|'priority'}
-export type Filtering = 'all'|'done'|'notDone'
-type State = {
-  todos:Todo[],
-  sorting:Sorting,
-  filtering:Filtering
-}
-
-const DEFAULT = {
-  //TODO
-} as State
+import TodoItem from './TodoItem'
+import ErrorAlert from "./ErrorAlert"
 
 type Action = 
-  {type:'created', todo:Todo}|
+  {type:'create', todo:Todo}|
   {type:'delete', todoId:string}|
+  {type:'theme', theme:Theme}|
   {type:'edit', todo:Todo}|
-  {type:'sort', value:Sorting}|
-  {type:'filter', show:Filtering}
+  {type:'sort', sorting: {sortBy:SortBy, sortOrder:SortOrder}}|
+  {type:'filter', filterBy:FilterBy}|
+  {type:'error', error:string|null}
 
-export const DispatchContext = createContext((a:Action)=>{})
+export const DispatchContext = createContext((a:Action)=>{console.log('empty dispatch')})
 
-export default function App({todos}:{todos:Todo[]}){
-  const [state, updateState] = useImmer<State>(DEFAULT)
+export const App = memo((
+  {initTodos=[], initOptions=DEFAULT_OPTIONS}:{initTodos?:Todo[], initOptions?:Options}
+)=>{
+  const initialSortedTodos = useMemo(()=>{// used by set state only on first render, so no need to resort
+    return [...initTodos].sort(compareTodos(initOptions.sortBy,initOptions.sortOrder))
+  },[])
+
+  const [state, updateState] = useImmer<State>(
+    {todos: initialSortedTodos, options:initOptions, lastError:null}
+  )
   
   const dispatch = useCallback((action:Action)=>{
     updateState(state=>{
@@ -41,8 +41,9 @@ export default function App({todos}:{todos:Todo[]}){
       // it as 'state' (not 'draft') in this scope helps to avoid accidental modifications of original state.
       const find = (id:string)=>state.todos.findIndex(todo=>todo.todoId==id)
 
-      if(action.type == 'created'){
+      if(action.type == 'create'){
         state.todos.push(action.todo)
+        state.options.sortCustom = true
       }
       
       if(action.type == 'delete'){
@@ -53,36 +54,61 @@ export default function App({todos}:{todos:Todo[]}){
       if(action.type == 'edit'){
         const i = find(action.todo.todoId)
         state.todos[i] = action.todo
+        state.options.sortCustom = true
       }
       
       if(action.type == 'sort'){
-        state.sorting = action.value
+        state.todos.sort(compareTodos(action.sorting.sortBy, action.sorting.sortOrder))
+        state.options = {...state.options,...action.sorting, sortCustom:false}
       }
       
       if(action.type == 'filter'){
-        state.filtering = action.show
+        state.options.filterBy = action.filterBy
       }
+
+      if(action.type == 'theme'){
+        state.options.theme = action.theme
+      }
+      
+      if(['sort', 'filter', 'theme'].includes(action.type)){
+        console.log('Cookies set:',Cookies.set('options', JSON.stringify(state.options)))
+      }
+
+      if(action.type == 'error'){
+        state.lastError = action.error
+      }
+
+      if(['create','delete','edit'].includes(action.type)){
+        state.lastError = null
+      }
+      console.log('Action:', JSON.stringify(action,undefined,'  '))
+      console.log('New State:', JSON.stringify(state,undefined,'  '))
     })
-  },[])
-
-  const displayTodos = useMemo(()=>{
-    let result = state.todos.filter(
-      todo=>state.filtering=='all' || todo.done == (state.filtering == 'done')
-    )
-    result = sortBy(result, 
-      todo => state.sorting.by == 'time' ? todo.timeStamp : todo.priority
-    )
-    state.sorting.order == 'desc' && reverse(state.todos)
-    return result
-  },[state.sorting,state.filtering, state.todos])
+  },[updateState])
   
+  useEffect(()=>{
+    state.options.theme == Theme.dark && document.body.classList.add('dark')
+    return ()=>{
+      document.body.classList.remove('dark')
+    }
+  },[state.options.theme])
 
-  return (
-   <div>
-    <DispatchContext.Provider value={dispatch}>
-      <TodoOptions sorting={state.sorting} filtering={state.filtering}/>
-      <TodoList todos={displayTodos} />
-    </DispatchContext.Provider>
-   </div>
-  )
-}
+  return (<DispatchContext.Provider value={dispatch}>
+    <div className={`App 
+      w-full h-full
+      flex flex-col justify-between gap-3
+      text-text-light dark:text-text-dark
+    `}>
+      <div className="UpperSection flex flex-col gap-3">
+        <Header theme={state.options.theme}/>
+        <TodoOptions {...state.options}/>
+        <TodoItem todoOrData={{...DEFAULT_TODO_DATA}} />
+        <TodoList todos={state.todos} filterBy={state.options.filterBy} />
+      </div>
+      <Footer/>
+      {state.lastError && <ErrorAlert message={state.lastError}/>}
+    </div>
+  </DispatchContext.Provider>)
+})
+
+export default App

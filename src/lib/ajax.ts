@@ -3,7 +3,7 @@ import { TodoData, PartialTodoData, TodoSchema} from './types'
 import {z,ZodError} from 'zod'
 
 const w = wretch()
-  .url('/api')
+  .url('/api/todos')
   .options({credentials:'include'}) // TODO same origin?
   .content('application/json')
 

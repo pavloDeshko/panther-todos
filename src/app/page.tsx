@@ -1,12 +1,27 @@
-import TodosWrapper from "@/components/todosWrapper"
+import { cookies } from "next/headers"
 
-export default async function App(){
-  return (
-      <div>
-        <TodosWrapper/>
-      </div>
-  )
+import { UuidSchema, Todo, USER_ID, OPTIONS, OptionsSchema } from "@/lib/types"
+import {readTodos} from "@/lib/data"
+import App from "@/components/App"
+
+const AppWrapper = async()=>{
+  const userId = UuidSchema.safeParse(cookies().get(USER_ID)?.value).data
+  const options = OptionsSchema.safeParse(JSON.parse(cookies().get(OPTIONS)?.value || '{}')).data
+
+  let todos :Todo[] = []
+  // for initial server render 
+  try{
+    if(userId){
+      todos = await readTodos(userId)
+    }
+  }catch(er){
+    console.error(er)
+  }
+  
+  return <App initTodos={todos} initOptions={options}/>
 }
+
+export default AppWrapper
 /*
 import Image from "next/image";
 
