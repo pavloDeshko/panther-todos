@@ -19,6 +19,7 @@ type Action =
   {type:'edit', todo:Todo}|
   {type:'sort', sorting: {sortBy:SortBy, sortOrder:SortOrder}}|
   {type:'filter', filterBy:FilterBy}|
+  {type:'search', value:string}|
   {type:'error', error:string|null}
 
 export const DispatchContext = createContext((a:Action)=>{console.error('empty dispatch')})
@@ -31,7 +32,7 @@ export const App = memo((
   },[])
 
   const [state, updateState] = useImmer<State>(
-    {todos: initialSortedTodos, options:initOptions, lastError:null}
+    {todos: initialSortedTodos, options:initOptions, search:'', lastError:null}
   )
   
   const dispatch = useCallback((action:Action)=>{
@@ -64,6 +65,10 @@ export const App = memo((
       
       if(action.type == 'filter'){
         state.options.filterBy = action.filterBy
+      }
+
+      if(action.type == 'search'){
+        state.search = action.value
       }
 
       if(action.type == 'theme'){
@@ -99,9 +104,9 @@ export const App = memo((
     `}>
       <div className="UpperSection flex flex-col gap-3">
         <Header theme={state.options.theme}/>
-        <TodoOptions {...state.options}/>
+        <TodoOptions {...state.options} search={state.search}/>
         <TodoItem todoOrData={{...DEFAULT_TODO_DATA}} />
-        <TodoList todos={state.todos} filterBy={state.options.filterBy} />
+        <TodoList todos={state.todos} filterBy={state.options.filterBy}  search={state.search} />
       </div>
       <Footer/>
       {state.lastError && <ErrorAlert message={state.lastError}/>}

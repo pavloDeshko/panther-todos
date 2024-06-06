@@ -55,5 +55,6 @@ export type Options = z.infer<typeof OptionsSchema>
 export type State = {
   todos: Todo[]
   options: Options,
+  search:string,
   lastError: string|null
 }

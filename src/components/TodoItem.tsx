@@ -1,10 +1,9 @@
-import { FormEvent, useState, memo, useContext, useCallback, useMemo } from "react"
+import { memo, useContext, useCallback } from "react"
 import { useImmer } from 'use-immer'
 
 import { Todo, TodoData, TodoMeta } from "@/lib/types"
 import {getTodos, postTodo, patchTodo, deleteTodo} from '@/lib/ajax'
 import { DispatchContext } from "./App"
-import AutoSave from "./AutoSave"
 import TodoForm from "./TodoForm"
 
 type StatusOrModified = 'loading' | 'idle'  | number // number is timestamp of last modification

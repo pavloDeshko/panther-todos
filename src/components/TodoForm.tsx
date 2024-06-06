@@ -118,7 +118,6 @@ const TodoForm = ({text, done, priority, loading, fresh,modified, onChange, onDe
         ">
           {priorities}
         </div>
-        
 
         <div className="InTextButtonContainer
           absolute 

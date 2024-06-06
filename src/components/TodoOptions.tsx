@@ -5,9 +5,17 @@ import { PiSortAscendingBold as AscIcon } from "react-icons/pi"
 import {FilterBy, SortBy, SortOrder} from "@/lib/types"
 import { DispatchContext} from "./App"
 import ButtonGroup, {Button, Active} from "./ButtonGroup"
+import Search from './Search'
 
-type TodoOptionsProps = {filterBy:FilterBy, sortBy:SortBy, sortOrder:SortOrder, sortCustom:boolean}
-const TodoOptions = ({filterBy, sortBy, sortOrder, sortCustom}:TodoOptionsProps)=>{
+type TodoOptionsProps = 
+  {
+    filterBy:FilterBy, 
+    sortBy:SortBy, 
+    sortOrder:SortOrder, 
+    sortCustom:boolean,
+    search:string
+  }
+const TodoOptions = ({filterBy, sortBy, sortOrder, sortCustom, search}:TodoOptionsProps)=>{
   const dispatch = useContext(DispatchContext)
   
   const onFiltering = (freshFilterBy:FilterBy)=>{
@@ -36,13 +44,14 @@ const TodoOptions = ({filterBy, sortBy, sortOrder, sortCustom}:TodoOptionsProps)
 }
 
   return (
-    <div className="Options flex justify-between gap-1">
-      <ButtonGroup>
+    <div className="Options flex justify-between gap-1 h-10">
+      <ButtonGroup className="shrink-[3]">
         <Button label='not done' {...getFilteringProps(FilterBy.notDone)} />
         <Button label='all' {...getFilteringProps(FilterBy.all)} />
         <Button label='done' {...getFilteringProps(FilterBy.done)} />
       </ButtonGroup>
-      <ButtonGroup>
+      <Search className='shrink-[6]' value={search}/>
+      <ButtonGroup className="shrink-[1]">
         <Button label='time' {...getSortingProps(SortBy.time)} />
         <Button label='priority' {...getSortingProps(SortBy.priority)} />
       </ButtonGroup>
