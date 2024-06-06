@@ -25,15 +25,15 @@ export enum Active {
 export const Button = memo(({icon, label, status=Active.no, onClick}:{icon?:ReactElement, label:string, status?:Active, onClick:()=>void})=>{
   return (
     <div className='ButtonOfGroupContainer
-      min-w-max flex-auto 
-      w-full sm:max-w-24
+      flex-initial 
+      min-w-max md:w-24
       relative overflow-clip 
       group 
       flex justify-between
     '>
       <button className={`ButtonProps
         w-full h-10
-        px-1
+        px-[2px] sm:px-1
         uppercase text-shadow-md
         ${status}
         flex justify-center items-center gap-x-1

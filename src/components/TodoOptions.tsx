@@ -45,13 +45,13 @@ const TodoOptions = ({filterBy, sortBy, sortOrder, sortCustom, search}:TodoOptio
 
   return (
     <div className="Options flex justify-between gap-1 h-10">
-      <ButtonGroup className="shrink-[3]">
+      <ButtonGroup >
         <Button label='not done' {...getFilteringProps(FilterBy.notDone)} />
         <Button label='all' {...getFilteringProps(FilterBy.all)} />
         <Button label='done' {...getFilteringProps(FilterBy.done)} />
       </ButtonGroup>
-      <Search className='shrink-[6]' value={search}/>
-      <ButtonGroup className="shrink-[1]">
+      <Search className="shrink-[3]" value={search}/>
+      <ButtonGroup >
         <Button label='time' {...getSortingProps(SortBy.time)} />
         <Button label='priority' {...getSortingProps(SortBy.priority)} />
       </ButtonGroup>
